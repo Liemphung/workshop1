@@ -1,0 +1,239 @@
+[
+{
+	"uri": "/",
+	"title": "AWS Serverless Data Lake Jumpstart",
+	"tags": [],
+	"description": "",
+	"content": "AWS Serverless Data Lake Jumpstart Introduction This workshop is prepared to guide participants on how to use AWS serverless services to build a cloud-native and future-proof serverless data lake architecture. We will use AWS Glue for ETL and data catalog management, Amazon S3 for data lake storage, Amazon Athena to query data and Amazon QuickSight to visualize data.\nObjective The objective of the workshop is to enable participants to jumpstart their journey of building a serverless data lake using the Lambda Architecture data-processing design pattern. Participants will go through a series of guided hands-on lab exercises using AWS serverless services to build a solution and tackle real-world scenarios.\nContents Getting Started Discovering and Cataloging Data Exploring Data Transforming Data Enriching Data Visualizing Data Clean Up Resources Summary "
+},
+{
+	"uri": "/5-enrichingdata/5.1-catalogtransformeddata/",
+	"title": "Catalog transformed data",
+	"tags": [],
+	"description": "",
+	"content": "Create a Glue Crawler Go to the AWS Glue Console.\nIn the left navigation menu, click Crawlers.\nOn the Crawlers page, click Create crawler.\nSpecify nyc-yellow-tripdata-parquet-crawler as the crawler name, click Next.\nOn the Choose data sources and classifiers screen, specify the following information, and then click Next.\nClick Add a data source Choose Data source – S3 Select Location of S3 data - In this account Include S3 path – s3://serverlessanalytics-[your-account-id]-transformed/nyc-taxi/yellow-tripdata For Subsequent crawler runs, select to Crawl all sub-folders Then click Add an S3 data source. On the Configure security settings, choose ServerlessAnalyticsRole from the Existing IAM role, click Next.\nOn the Set output and scheduling screen, choose nyctaxi_db as the database.\nOn the Crawler schedule, leave the frequency On demand, click Next.\nReview the crawler details, click Create crawler.\nOn the Crawlers page, select nyc-yellow-tripdata-parquet-crawler, and then click Run crawler.\n"
+},
+{
+	"uri": "/2-discoveringandcatalogingdata/2.1-createagluecrawler/",
+	"title": "Create a Glue Crawler",
+	"tags": [],
+	"description": "",
+	"content": "Create a Glue Crawler Glue Crawler is a feature that automatically infer database and table schema from your source data then stores the associated metadata in the AWS Glue Data Catalog.\nGo to the AWS Glue Console.\nIn the left navigation menu, click Crawlers.\nOn the Crawlers page, click Create crawler.\nSpecify nyc-taxi-crawler as the crawler’s name, click Next.\nOn the Choose data sources and classifiers screen, specify the following information, and then click Next.\nClick Add a data source Choose a Data source – S3 Select Location of S3 data - In this account Include S3 path – s3://serverlessanalytics-[your-account-id]-raw/nyc-taxi/ For Subsequent crawler runs, select to Crawl all sub-folders Then click Add an S3 data source. On Configure security settings, choose ServerlessAnalyticsRole from the Existing IAM role, click Next.\nOn the Set output and scheduling screen, click Add database.\nSpecify nyctaxi_db as the unique database name, and then click Create database.\nGo back to the previous tab (Set output and scheduling screen), refresh the selection for Target database and choose the newly created database nyctaxi_db.\nSpecify raw_ in the Table name prefix - optional field.\nOn the Crawler schedule, leave the frequency On demand, click Next.\nReview the crawler details, click Create crawler. "
+},
+{
+	"uri": "/4-transformingdata/4.1-createjob/",
+	"title": "Create a job using Glue Studio",
+	"tags": [],
+	"description": "",
+	"content": "Planning the Data Transformation Steps It’s a good practice to plan the steps to transform your data. Based on the information we captured during data exploration stage, we can come up with the following transformation step:\nRead yellow trip data from S3, raw_yellow_tripdata table. Clean yellow trip data data. Remove records with NULL values (vendorid, payment_type, passenger count, ratecodeid). Filter records within a time period (remove records with invalid pickup datetime, narrow down data to be processed). Join yellow trip data with taxi zone lookup to obtain pickup location information. Read lookup data from S3, raw_taxi_zone_lookup table. Rename column names of lookup data to differentiate pickup locations from drop-off locations. Perform the join. Join yellow trip data with taxi zone lookup to obtain drop-off location information. Read lookup data from S3, raw_taxi_zone_lookup table. Rename column names of lookup data to differentiate drop-off locations from pickup locations. Perform the join. Perform data transformation on joined dataset. Rename column names. Set appropriate data types. Remove redundant columns as a result of table joins. Save processed dataset to S3 in a query optimized format. Create a job using Glue Studio Go to Glue console.\nIn the left navigation panel, click ETL jobs.\nOn the AWS Glue Studio page, click Visual ETL.\nIn the Glue Studio editor page, go to the Job details tab, set the following configuration:\nName – Transform NYC Taxi Trip Data IAM Role – ServerlessAnalyticsRole Job bookmark – Disable Number of retries - 0 AWS Glue job bookmark feature helps maintain state information and prevent the reprocessing of old data. It enables the job to process only new data when rerunning on a scheduled interval.\nClick Save. Go back to the Visual tab.\n"
+},
+{
+	"uri": "/1-gettingstarted/",
+	"title": "Getting Started",
+	"tags": [],
+	"description": "",
+	"content": "Overview In preparation for the workshop, we have created Amazon S3 buckets, copied sample data files to Amazon S3, and created an IAM service role.\nWhat is a Data Lake? A data lake is a centralized repository that allows you to store all your structured and unstructured data at any scale. You can store your data as-is, without having to first structure the data, and run different types of analytics—from dashboards and visualizations to big data processing, real-time analytics, and machine learning to guide better decisions.\nIntroducing Amazon S3 Amazon Simple Storage Service (S3) is the largest and most performant object storage service for structured and unstructured data and the storage service of choice to build a data lake. With Amazon S3, you can cost-effectively build and scale a data lake of any size in a secure environment where data is protected by 99.999999999% (11 9s) of durability.\nWith data lakes built on Amazon S3, you can use native AWS services to run big data analytics, artificial intelligence (AI) and Machine Learning (ML) to gain insights from your unstructured data sets. Data can be collected from multiple sources and moved into the data lake in its original format. It can be accessed or processed with your choice of purpose-built AWS analytics tools and frameworks. Making it easy and quick to run analytics without the need to move your data to a separate analytics system.\nDeploy a CloudFormation Template Some of the assets provided in this workshop were designed with Intended Vulnerabilities. Please USE WITH CAUTION as these assets are for Training Purposes only. If you run this workshop using your own AWS Account, just be aware that it will incur costs until you clean up the deployed AWS resources.\nWe will first set up required resources for this lab. We will be creating S3 buckets to store the files and appropriate IAM roles for the services that we will be using. These resources are been defined in a CloudFormation template.\nGo to CloudFormation in AWS Console. In the right navigation menu, click Create stack, With new resources (standard). Download this file: CFN Template Select Upload a template file, and upload the file you downloaded. Click Next. For stack name, specify sdlj-workshop. Click Next until Review and create page. Check I Acknowledge that AWS CloudFormation might create IAM resources with custom names. Click Submit. Wait for resources to be provisioned. In the following sections, we will delve into Discovering and Cataloging your Data\n"
+},
+{
+	"uri": "/3-exploringdata/3.1-amazonathena/",
+	"title": "Using Amazon Athena for the first time",
+	"tags": [],
+	"description": "",
+	"content": "Introducing Amazon Athena Amazon Athena is an interactive query service that makes it easy to analyze data in Amazon S3 using standard SQL. Athena is serverless, so there is no infrastructure to setup or manage, and you can start analyzing data immediately. You don’t even need to load your data into Athena, it works directly with data stored in S3.\nUsing Amazon Athena for the first time Amazon Athena automatically stores query results and metadata information for each query that runs in a query result location that you can specify in Amazon S3. If necessary, you can access the files in this location to work with them. You can also download query result files directly from the Athena console.\nGo to Athena console. Click Launch query editor.\nOn the top menu, click Workgroup: primary.\nChoose Settings, click on Browse S3 and select s3://serverlessanalytics-[your-account-id]-athena as the value for the Location of query result - optional field.\nGo to the bottom of the page, click Save.\nGo to the top menu, click on Editor to return back to the Query editor page.\n"
+},
+{
+	"uri": "/6-visualizingdata/6.1-amazonquicksight/",
+	"title": "Using Amazon QuickSight for the first time",
+	"tags": [],
+	"description": "",
+	"content": "Using Amazon QuickSight for the first time Go to QuickSight console, click SIGN UP FOR QUICKSIGHT. On the Create your QuickSight account page, specify the following:\nContact information Email for account notifications – [your email address] Select a region – Asia Pacific (Singapore) QuickSight account name – aws-sdl-jumpstart-your-[initials] Check Amazon S3, click Select S3 buckets Select [your-bucket-name]–transformed, click Finish. On the Create your QuickSight account page, click Finish.\nWait for a few seconds for your QuickSight account to be created, then click GO TO QUICKSIGHT.\nA “What’s New in Amazon Quick Sight” window will popup, click Close.\n"
+},
+{
+	"uri": "/4-transformingdata/4.2-adddatasource/",
+	"title": "Add a data source",
+	"tags": [],
+	"description": "",
+	"content": "Adding Yellow Trips data from Amazon S3 Click on the Sources icon, choose Amazon S3.\nIn the Data source – S3 bucket node, the specify the following information:\nNode properties tab, Name - Yellow Trip Data Data source properties tab, Database – nyctaxi_db Data source properties tab, Table – raw_yellow_tripdata Click Save. Remember to save your work as you progress on building the transformation steps.\nReview resulting data schema and previewing data Go to the Output schema tab to review the resulting data schema.\nAWS Glue Studio now allows you to preview your data at each step of the visual job authoring process so you can test and debug your transformations without having to save or run the job.\nThe first time you choose the Data preview tab, you are prompted to choose an IAM role to use. The IAM role you choose must have the necessary permissions to create the data previews. This can be the same role that you plan to use for your job, or it can be a different role.\nAfter you choose an IAM role, it takes about 20 to 30 seconds before the data appears. You are charged for data preview usage as soon as you choose the IAM role.\n"
+},
+{
+	"uri": "/6-visualizingdata/6.2-connectdatasource/",
+	"title": "Connect to a data source",
+	"tags": [],
+	"description": "",
+	"content": "Connect to a data source On the QuickSight page, click Datasets in the left navigation menu pane.\nOn the upper right section of the screen, click new dataset\nSelect Athena\nIn the New Athena data source window, specify the following:\nData source name – Athena - SDL Jumpstart Athena workgroup – primary Click Create Data Source In the Choose your table window, specify the following:\nCatalog – AwsDataCatalog Database – nyctaxi_db Tables – v_yellow_tripdata Click Select. In the Finish dataset creation window, specify the following:\nImport to SPICE for quicker analytics Click Edit/Preview data. SPICE stands for Super-fast, Parallel, In-memory Calculation Engine. It\u0026rsquo;s engineered to rapidly perform advanced calculations and serve data. SPICE capacity is shared by all the people using QuickSight in a single AWS Region.\n"
+},
+{
+	"uri": "/2-discoveringandcatalogingdata/",
+	"title": "Discovering and Cataloging Data",
+	"tags": [],
+	"description": "",
+	"content": "Overview With an array of data sources and formats in your data lake, it\u0026rsquo;s important to have the ability to discover and catalog it order to better understand the data that you have and at the same time enable integration with other purpose-built AWS analytics.\nIn this lab, we will create an AWS Glue Crawlers to auto discover the schema of the data stored in Amazon S3. The discovered information about the data stored in S3 will be registered in the AWS Glue Catalog. This allows AWS Glue to use the information stored in the catalog for ETL processing. It also allows other AWS services like Amazon Athena to run queries on the data stored in Amazon S3.\nIntroducing AWS Glue AWS Glue is a fully managed serverless extract, transform, and load (ETL) service that makes it simple and cost-effective to categorize your data, clean it, enrich it, and move it reliably between various data stores. AWS Glue consists of the following core components:\nData Catalog – a central repository to store structural and operational metadata of your data assets. ETL Engine – automatically generate Scala or Python code. Jobs System – provides managed infrastructure to orchestrate your ETL workflow. AWS Glue also includes additional components like:\nAWS Glue DataBrew - A visual data preparation tool that makes it easy for data analysts and data scientists to prepare data with an interactive, point-and-click visual interface without writing code. AWS Glue Elastic Views - Build materialized views that combine and replicate data across multiple data stores without you having to write custom code. Together, these automate much of the undifferentiated heavy lifting involved with discovering, categorizing, cleaning, enriching, and moving data, so you can spend more time analyzing your data.\nContents Create a Glue Crawler Run the Glue Crawler Review the metadata in Glue Data Catalog "
+},
+{
+	"uri": "/3-exploringdata/3.2-previewtabledata/",
+	"title": "Preview table data",
+	"tags": [],
+	"description": "",
+	"content": "Preview table data On the Query editor page, click on the actions menu icon ⋮ besides raw_yellow_tripdata, and then select Preview table.\nExamine the data.\nDo the same for raw_taxi_zone_lookup table. Observe that all string values are enclosed with “.\n"
+},
+{
+	"uri": "/2-discoveringandcatalogingdata/2.2-runthegluecrawler/",
+	"title": "Run the Glue Crawler",
+	"tags": [],
+	"description": "",
+	"content": "Run the Glue Crawler On the Crawlers page, select nyc-taxi-yellow-trips-csv-crawler, and then click Run crawler. Upon successful completion of the crawler, you should see a value of 2 in the Tables added column. "
+},
+{
+	"uri": "/5-enrichingdata/5.2-validatetransformeddata/",
+	"title": "Validate transformed data",
+	"tags": [],
+	"description": "",
+	"content": "Validate transformed data Go to Athena console.\nSelect Preview table to examine the data in yellow_tripdata table.\nOn the Query editor page, run the following queries to examine the data.\nSELECT COUNT(*) \u0026#34;Count\u0026#34; FROM yellow_tripdata; SELECT DATE_TRUNC(\u0026#39;month\u0026#39;, pickup_datetime) \u0026#34;Period\u0026#34;, COUNT(*) \u0026#34;Total Records\u0026#34; FROM yellow_tripdata GROUP BY DATE_TRUNC(\u0026#39;month\u0026#39;, pickup_datetime) ORDER BY 1; "
+},
+{
+	"uri": "/5-enrichingdata/5.3-enrichtransformeddata/",
+	"title": "Enrich transformed data",
+	"tags": [],
+	"description": "",
+	"content": "Enrich transformed data Run the following query to create a view to enrich the table with additional data.\nCREATE OR REPLACE VIEW v_yellow_tripdata AS SELECT CASE vendor_id WHEN 1 THEN \u0026#39;Creative Mobile\u0026#39; WHEN 2 THEN \u0026#39;VeriFone\u0026#39; ELSE \u0026#39;No Data\u0026#39; END \u0026#34;vendor_name\u0026#34;, pickup_datetime, dropoff_datetime, passenger_count, trip_distance, CASE ratecodeid WHEN 1 THEN \u0026#39;Standard Rate\u0026#39; WHEN 2 THEN \u0026#39;JFK\u0026#39; WHEN 3 THEN \u0026#39;Newark\u0026#39; WHEN 4 THEN \u0026#39;Nassau/Westchester\u0026#39; WHEN 5 THEN \u0026#39;Negotiated Fare\u0026#39; WHEN 6 THEN \u0026#39;Group Ride\u0026#39; WHEN 99 THEN \u0026#39;Special Rate\u0026#39; ELSE \u0026#39;No Data\u0026#39; END \u0026#34;rate_type\u0026#34;, store_and_fwd_flag, pu_borough, pu_zone, pu_service_zone, do_borough, do_zone, do_service_zone, CASE payment_type WHEN 1 THEN \u0026#39;Credit Card\u0026#39; WHEN 2 THEN \u0026#39;Cash\u0026#39; WHEN 3 THEN \u0026#39;No Charge\u0026#39; WHEN 4 THEN \u0026#39;Dispute\u0026#39; WHEN 5 THEN \u0026#39;Unknown\u0026#39; WHEN 6 THEN \u0026#39;Voided Trip\u0026#39; ELSE \u0026#39;No Data\u0026#39; END \u0026#34;payment_type\u0026#34;, fare_amount, extra, mta_tax, tip_amount, tolls_amount, improvement_surcharge, congestion_surcharge, total_amount FROM yellow_tripdata; Select Preview table to examine the enriched data in v_yellow_tripdata view.\nRun the following query to get insights.\nSELECT vendor_name \u0026#34;Vendor\u0026#34;, rate_type \u0026#34;Rate Type\u0026#34;, payment_type \u0026#34;Payment Type\u0026#34;, ROUND(AVG(fare_amount), 2) \u0026#34;Fare\u0026#34;, ROUND(AVG(extra), 2) \u0026#34;Extra\u0026#34;, ROUND(AVG(mta_tax), 2) \u0026#34;MTA\u0026#34;, ROUND(AVG(tip_amount), 2) \u0026#34;Tip\u0026#34;, ROUND(AVG(tolls_amount), 2) \u0026#34;Toll\u0026#34;, ROUND(AVG(improvement_surcharge), 2) \u0026#34;Improvement\u0026#34;, ROUND(AVG(congestion_surcharge), 2) \u0026#34;Congestion\u0026#34;, ROUND(AVG(total_amount), 2) \u0026#34;Total\u0026#34; FROM v_yellow_tripdata GROUP BY vendor_name, rate_type, payment_type ORDER BY 1, 2, 3; "
+},
+{
+	"uri": "/3-exploringdata/",
+	"title": "Exploring Data",
+	"tags": [],
+	"description": "",
+	"content": "Overview In this lab, we will use Amazon Athena to explore our data and identify data quality issues. We will also learn how to update table properties in AWS Glue Catalog.\nContents Using Amazon Athena for the first time Preview table data Working with CSV data enclosed in quotes Run SQL queries to explore the data "
+},
+{
+	"uri": "/4-transformingdata/4.3-removerecords/",
+	"title": "Remove records with NULL values",
+	"tags": [],
+	"description": "",
+	"content": "Remove records with NULL values Click on the Transform icon, choose Custom transform.\nIn the Transform – Custom code node, specify the following information:\nNode properties tab, Name - Remove Records with NULL\nAdd the following in the Code block:\ndef MyTransform (glueContext, dfc) -\u0026gt; DynamicFrameCollection: df = dfc.select(list(dfc.keys())[0]).toDF().na.drop() results = DynamicFrame.fromDF(df, glueContext, \u0026#34;results\u0026#34;) return DynamicFrameCollection({\u0026#34;results\u0026#34;: results}, glueContext) Click on the Transform icon, choose SelectFromCollection.\nSpecify the following information:\nNode properties tab, Name – SelectFromCollection Transform tab, Frame index – 0 Remember to Save your work.\n"
+},
+{
+	"uri": "/6-visualizingdata/6.3-reviewdataset/",
+	"title": "Review dataset",
+	"tags": [],
+	"description": "",
+	"content": "Review dataset In the upper left corner of the screen, specify Athena – Transformed Yellow Trip Data as the Dataset Name.\nReview Query mode, make sure SPICE is selected.\nYou have the option to make additional data preparation steps here before you visualize data.\nIn the upper right corner of the screen, click Save \u0026amp; visualize.\n"
+},
+{
+	"uri": "/2-discoveringandcatalogingdata/2.3-reviewthemetadataingluedatacatalog/",
+	"title": "Review the metadata in Glue Data Catalog",
+	"tags": [],
+	"description": "",
+	"content": "Review the metadata in Glue Data Catalog Glue Data Catalog contain references to data that is used as sources and targets of your extract, transform, and load (ETL) jobs in AWS Glue. It also maintain a unified view of the data and enables various AWS services such as Athena, EMR, and Redshift Spectrum to access it.\nIn the left navigation menu, click Tables. On the Tables page, click on the name raw_yellow_tripdata to review the table metadata and schema information. "
+},
+{
+	"uri": "/3-exploringdata/3.3-workingwithcsvdata/",
+	"title": "Working with CSV data enclosed in quotes",
+	"tags": [],
+	"description": "",
+	"content": "Working with CSV data enclosed in quotes Working with CSV files enclosed in Quotes CSV files occasionally have quotes around the data values intended for each column which aren\u0026rsquo;t part of the data to be analyzed. To read the CSV file properly, we can update the table properties in AWS Glue to use the OpenCSVSerDe.\nGo to Glue console.\nIn the left navigation menu, click Tables under the Data Catalog section.\nOn the Table screen, click on the raw_taxi_zone_lookup table.\nClick Actions, then click on Edit table.\nUpdate the Serialization lib with org.apache.hadoop.hive.serde2.OpenCSVSerde.\nRemove existing Serde parameters and then add the following:\nescapeChar, enter a backslash \\ quoteChar, enter a double quote \u0026quot; separatorChar, enter a comma , Click Save.\nGo to back to the Athena console.\nOn the Query editor page, click on the actions menu icon ⋮ besides raw_taxi_zone_lookup, and then click Preview table.\nObserve that all string values are no longer enclosed with “.\n"
+},
+{
+	"uri": "/4-transformingdata/4.4-filterrecords/",
+	"title": "Filter records",
+	"tags": [],
+	"description": "",
+	"content": "Filter records to remove records invalid Pickup DateTime In the interest of time, we will filter the records between October 2020 and December 2020 to reduce job processing time during the workshop.\nClick on the Transform icon, choose Filter.\nSpecify the following information:\nNode properties tab, Name – Filter - Yellow Trip Data Transform tab, Filter condition – tpep_pickup_datetime matches ^2020-1 Remember to Save your work.\nReview the automatically generated script Go to the Script details tab.\nObserve that the code of the script are automatically generated by Glue Studio.\n"
+},
+{
+	"uri": "/3-exploringdata/3.4-explorethedata/",
+	"title": "Run SQL queries to explore the data",
+	"tags": [],
+	"description": "",
+	"content": "Run SQL queries to explore the data Check number of yellow taxi trip records.\nSELECT COUNT(*) \u0026#34;Count\u0026#34; FROM raw_yellow_tripdata; Explore data categories.\n-- observe NULL values SELECT vendorid, COUNT(*) \u0026#34;Count\u0026#34; FROM raw_yellow_tripdata GROUP BY vendorid ORDER BY 1; -- observe other categories SELECT pulocationid, COUNT(*) \u0026#34;Count\u0026#34; FROM raw_yellow_tripdata GROUP BY pulocationid ORDER BY 1; -- observe NULL values SELECT payment_type, COUNT(*) \u0026#34;Count\u0026#34; FROM raw_yellow_tripdata GROUP BY payment_type ORDER BY 1; Explore records with NULL Vendor ID.\n-- observe other columns with NULL values -- passenger_count, ratecodeid, store_and_fwd_flag, payment_type SELECT * FROM raw_yellow_tripdata WHERE vendorid IS NULL LIMIT 100; Explore records by time period.\n-- tpep_pickup_datetime is defined as STRING -- observe record counts that falls outside of the time period SELECT SUBSTR(tpep_pickup_datetime, 1, 7) \u0026#34;Period\u0026#34;, COUNT(*) \u0026#34;Total Records\u0026#34; FROM raw_yellow_tripdata GROUP BY SUBSTR(tpep_pickup_datetime, 1, 7) ORDER BY 1; Count records that falls outside of year 2020.\n-- records with incorrect pickup datetime values SELECT COUNT(*) \u0026#34;Count\u0026#34; FROM raw_yellow_tripdata WHERE SUBSTR(tpep_pickup_datetime, 1, 7) NOT LIKE \u0026#39;2020%\u0026#39;; Count records with NULL values (based on Vendor ID) that falls within 2020.\n-- Records with NULL categories like Vendor ID SELECT COUNT(*) \u0026#34;Count\u0026#34; FROM raw_yellow_tripdata WHERE vendorid IS NULL AND SUBSTR(tpep_pickup_datetime, 1, 7) LIKE \u0026#39;2020%\u0026#39;; Count records that falls in the last quarter of 2020, exclude records with missing Vendor ID.\n-- Total records in BER months, excluding columns with missing Vendor ID SELECT COUNT(*) \u0026#34;Count\u0026#34; FROM raw_yellow_tripdata WHERE vendorid IS NOT NULL AND SUBSTR(tpep_pickup_datetime, 1, 7) LIKE \u0026#39;2020-1%\u0026#39;; Join taxi trips data with taxi zone look up table.\n-- explore data with lookup information -- observe column names from lookup tables SELECT td.*, pu.*, do.* FROM raw_yellow_tripdata td, taxi_zone_lookup pu, taxi_zone_lookup do WHERE td.pulocationid = pu.locationid AND td.pulocationid = do.locationid AND vendorid IS NOT NULL AND SUBSTR(tpep_pickup_datetime, 1, 7) LIKE \u0026#39;2020-1%\u0026#39; LIMIT 100; -- Count total joined records for the last quarter of 2020. SELECT COUNT(*) \u0026#34;Count\u0026#34; FROM raw_yellow_tripdata td, taxi_zone_lookup pu, taxi_zone_lookup do WHERE td.pulocationid = pu.locationid AND td.pulocationid = do.locationid AND vendorid IS NOT NULL AND SUBSTR(tpep_pickup_datetime, 1, 7) LIKE \u0026#39;2020-1%\u0026#39;; "
+},
+{
+	"uri": "/4-transformingdata/",
+	"title": "Transforming Data",
+	"tags": [],
+	"description": "",
+	"content": "Overview Data enrichment is the process of enhancing existing data with additional data from other sources to provide additional context or meaning, it makes data more useful and insightful during analysis.\nContents Create a job using Glue Studio Add a data source Remove records with NULL values Filter records Add another data source Join data Add and join another dataset Transform data and save to target Run the job "
+},
+{
+	"uri": "/6-visualizingdata/6.4-visualizedata/",
+	"title": "Visualize data",
+	"tags": [],
+	"description": "",
+	"content": "Visualize data QuickSight will attempt to load your data to SPICE, please wait for a few minutes.\nTo visualize the flow of yellow taxi trips from pickup borough to drop-off borough, click + Add in the menu.\nSelect the Sankey visual type, specify the following on the Field wells.\nSource – pu_borough Destination – do_borough You can click on the visual type title, change it to Taxi Trips Flow Filtering Data Create a filter focus on taxi trips originating from Manhattan.\nType pu_borough and then select it.\nClick on the menu besides the pu_borough filter, select Edit.\nDeselect Manhattan from the Filter list, click Apply.\nGet insights by examining the taxi trip flow based on pickup borough and drop-off borough.\nObserve the traffic flow patterns.\n"
+},
+{
+	"uri": "/4-transformingdata/4.5-addanotherdatasource/",
+	"title": "Add another data source",
+	"tags": [],
+	"description": "",
+	"content": "Add lookup table for Taxi Pickup Zone Return to the Visual tab Click on the Sources icon, choose Amazom S3 In the Data source – S3 bucket node, the specify the following information: Node properties tab, Name - Pickup Zone Lookup Data source properties tab, Database – nyctaxi_db Data source properties tab, Table – raw_taxi_zone_lookup Remember to Save your work. Modify column names of Pickup Taxi Zone Lookup table Make sure the Amazon S3 - Pickup Zone Lookup node is selected. Click on the Transform icon, choose Change Schema. Specify the following information: Node properties tab, Name - Change Schema - Pickup Zone Lookup\nTransform tab, modify the target key\nlocationid to pu_location_id borough to pu_borough zone to pu_zone service_zone to pu_service_zone Remember to Save your work. "
+},
+{
+	"uri": "/5-enrichingdata/",
+	"title": "Enriching Data",
+	"tags": [],
+	"description": "",
+	"content": "Overview A picture is worth 1000 words. Data visualization presents data in graphical format which makes data easier to digest and understand. It allows users to gain better insights from data to make informed decisions.\nContents Catalog transformed data Validate transformed data Enrich transformed data "
+},
+{
+	"uri": "/4-transformingdata/4.6-joindata/",
+	"title": "Join data",
+	"tags": [],
+	"description": "",
+	"content": "Join the Yellow Trips data with Pickup Taxi Zone Lookup data Click on the Transform icon, choose Join.\nSpecify the following information:\nNode properties tab, Name - Yellow Trips Data + Pickup Zone Lookup\nNode properties tab, Node Parents\nChange Schema - Pickup Zone Lookup Filter - Yellow Trip Data Transform properties tab, under the Join conditions, select the following keys:\nChange Schema - Pickup Zone Lookup - pu_location_id Filter - Yellow Trip Data - pulocationid Remember to Save your work.\n"
+},
+{
+	"uri": "/6-visualizingdata/",
+	"title": "Visualizing Data",
+	"tags": [],
+	"description": "",
+	"content": "Overview In this lab, we will create access the enriched data that is stored in Amazon S3 and then visualize the data in Amazon QuickSight. We will get insights on the flow yellow taxi trips from the pickup borough to the drop-off borough.\nContents Using Amazon QuickSight for the first time Connect to a data source Review dataset Visualize data "
+},
+{
+	"uri": "/4-transformingdata/4.7-addandjoinanotherdataset/",
+	"title": "Add and join another dataset",
+	"tags": [],
+	"description": "",
+	"content": "Add lookup table for Taxi Drop-off Zone Click on the Source icon, choose Amazon S3\nIn the Data source – S3 bucket node, the specify the following information:\nNode properties tab, Name - Dropoff Zone Lookup Data source properties tab, Database – nyctaxi_db Data source properties tab, Table – raw_taxi_zone_lookup Remember to Save your work.\nModify column names of Drop-off Taxi Zone Lookup table Make sure the Amazon S3 - Dropoff Zone Lookup node is selected.\nClick on the Transform icon, choose Change Schema.\nSpecify the following information:\nNode properties tab, Name - Change Schema - Dropoff Zone Lookup\nTransform tab, modify the target key of the following:\nlocationid to do_location_id borough to do_borough zone to do_zone service_zone to do_service_zone Remember to Save your work.\nJoin Yellow Trips data and Dropoff Taxi Zone Lookup data Click on the Transform icon, choose Join.\nSpecify the following information:\nNode properties tab, Name - Yellow Trips Data + Pickup Zone Lookup + Dropoff Zone Lookup\nNode properties tab, Node Parents\nChange Schema - Dropoff Zone Lookup\nYellow Trips Data + Pickup Zone Lookup\nTransform properties tab, under the Join conditions, select the following keys:\nChange Schema - Dropoff Zone Lookup – do_location_id Yellow Trips Data + Pickup Zone Lookup – dolocationid Remeber to Save your work.\n"
+},
+{
+	"uri": "/7-cleanup/",
+	"title": "Clean Up Resources",
+	"tags": [],
+	"description": "",
+	"content": "Close QuickSight account Choose your user name on the application bar and then choose Manage QuickSight. Choose Your Subscriptions. Next to the set of subscriptions that you want to delete, choose Edit. Choose Delete Subscription. Delete AWS Glue Crawlers Access to AWS Glue Studio\nChoose Crawlers\nChoose the following 2 crawlers:\nnyc-taxi-crawler nyc-yellow-tripdata-parquet-crawler Click Actions, choose Delete crawlers and type Delete to confirm deletion\nDelete AWS Glue Jobs Access to AWS Glue Studio\nChoose ETL jobs\nChoose Transform NYC Taxi Trip Data, then click Actions and choose Delete job(s)\nDelete AWS CloudFormation Access to CloudFormation\nChoose sdlj-workshop and then click Delete\nDelete S3 bucket Access to Amazon S3\nChoose Buckets\nChoose each bucket to Empty, type permanently delete to confirm deletion and then choose each bucket to Delete\n"
+},
+{
+	"uri": "/8-summary/",
+	"title": "Summary",
+	"tags": [],
+	"description": "",
+	"content": "Congratulations for finishing the lab! In this lab, you successfully built an end-to-end serverless data pipeline encompassing data ingestion, data transformation, and data visualization. You leveraged various AWS serverless services to create a robust and scalable data lake architecture.\nLab Summary:\nData Ingestion: You ingested data from various sources into Amazon S3, the central data lake storage. This step involved capturing and storing raw data in its original format for later processing.\nData Transformation: Using AWS Glue, you defined and executed ETL (Extract, Transform, Load) jobs to process the raw data stored in S3. These jobs transformed the data into a structured format suitable for analysis and reporting.\nData Catalog: AWS Glue Data Catalog played a crucial role in organizing and managing the metadata for your data lake. It provided a centralized repository for storing schema definitions, data lineage, and other metadata related to your datasets.\nData Analysis: With Amazon Athena, you were able to query and analyze the transformed data stored in S3 using standard SQL syntax. Athena\u0026rsquo;s serverless architecture allowed you to run ad-hoc queries without provisioning or managing any infrastructure.\nData Visualization: Finally, you connected Amazon QuickSight to your data sources, enabling you to create interactive visualizations and dashboards. QuickSight provided a user-friendly interface for exploring and presenting your data insights.\nThroughout this lab, you experienced the power and flexibility of AWS serverless services in building a modern data lake architecture. By leveraging serverless technologies, you eliminated the need for provisioning and managing servers, enabling you to focus on your core data engineering tasks.\nMoving forward, you can continue to enhance and expand your serverless data lake by integrating additional data sources, implementing advanced data processing techniques, and exploring other AWS services like Amazon Kinesis, AWS Lambda, and Amazon SageMaker, among others.\n"
+},
+{
+	"uri": "/4-transformingdata/4.8-transformdata/",
+	"title": "Transform data and save to target",
+	"tags": [],
+	"description": "",
+	"content": "Modify column names and data types of the joined dataset Click on the Transform icon, choose Change Schema.\nSpecify the following information:\nNode properties tab, Name - Change Schema - Joined Data Transform tab, modify the Target key and Data type of the following: vendorid to vendor_id tpep_pickup_datetime to pickup_datetime, string to timestamp tpep_dropoff_datetime to dropoff_datetime, string to timestamp Transform tab, drop the following Source keys: pulocationid dolocationid Remember to Save your work.\nSave transformed data to Amazon S3 Click on the Target icon, choose Amazon S3.\nSpecify the following information:\nNode properties tab, Name – Transformed Yellow Trip Data Data target properties – S3 tab, specify the following: Format – Parquet Compression Type - Snappy S3 Target Location – s3://serverlessanalytics-[your-account-id]-transformed/nyc-taxi/yellow-tripdata/ Remember to Save your work.\n"
+},
+{
+	"uri": "/4-transformingdata/4.9-runthejob/",
+	"title": "Run the job",
+	"tags": [],
+	"description": "",
+	"content": "Run the data transformation job On the upper right section of the AWS Glue Studio page, click Run.\nGo to the Runs tab to view the status on of the job.\nClick on the Job Id to monitor the job run. "
+},
+{
+	"uri": "/categories/",
+	"title": "Categories",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "/tags/",
+	"title": "Tags",
+	"tags": [],
+	"description": "",
+	"content": ""
+}]

@@ -1,0 +1,22 @@
+---
+title : "Transform data and save to target"
+date : "`r Sys.Date()`"
+weight : 8
+chapter : false
+pre : " <b> 4.8 </b> "
+---
+
+#### Modify column names and data types of the joined dataset
+
+1. Click on the **Transform** icon, choose **Change Schema**.
+2. Specify the following information:
+    - Node properties tab, **Name** - `Change Schema - Joined Data`
+    - Transform tab, modify the Target key and Data type of the following:
+        + **vendorid** to `vendor_id`
+        + **tpep_pickup_datetime** to `pickup_datetime`, **string** to `timestamp`
+        + **tpep_dropoff_datetime** to `dropoff_datetime`, **string** to `timestamp`
+    - Transform tab, drop the following **Source keys**:
+        + `pulocationid`
+        + `dolocationid`
+
+    ![Glue Jobs](/images/4-GlueJobs/020-GlueJobs.png?featherlight=false&width=40pc)
